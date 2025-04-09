@@ -8,8 +8,9 @@ import (
 )
 
 type envConfig struct {
-	AppPort string
-	DbPort  string
+	AppPort     string
+	DbPort      string
+	DatabaseURL string
 }
 
 func (e *envConfig) LoadConfig() {
@@ -20,6 +21,7 @@ func (e *envConfig) LoadConfig() {
 
 	e.AppPort = loadString("APP_PORT", ":8080")
 	e.DbPort = loadString("DB_PORT", ":5432")
+	e.DatabaseURL = loadString("DATABASE_URL", "postgres://postgres:123456@localhost:5432/tasks?sslmode=disable")
 }
 
 var Config envConfig
