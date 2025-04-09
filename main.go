@@ -1,17 +1,23 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/jakkaphatminthana/go-gin/config"
 )
 
 func main() {
-	router := gin.Default()
-	router.GET("/", func(ctx *gin.Context) {
+	handler := gin.Default()
+	handler.GET("/", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
 			"message": "OK",
 		})
 	})
 
-	router.Run(":8080")
+	server := &http.Server{
+		Addr:    config.Config.AppPort,
+		Handler: handler,
+	}
+	server.ListenAndServe()
 }
