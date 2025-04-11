@@ -17,7 +17,7 @@ func InitDB() {
 	var err error
 
 	// connect to database
-	DB, err := pgx.Connect(context.Background(), urlExample)
+	DB, err = pgx.Connect(context.Background(), urlExample)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
