@@ -1,9 +1,10 @@
 package handlers
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/jakkaphatminthana/go-gin/db"
-	"net/http"
 )
 
 func SaveTask(ctx *gin.Context) {
@@ -13,11 +14,21 @@ func SaveTask(ctx *gin.Context) {
 		return
 	}
 
-	id, err := db.TaskRepository.SaveTaskQuery(payload)
+	id, err := db.TaskRepository.SaveTask(payload)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to save task", "data": nil})
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{"message": "Task created successfully", "data": gin.H{"id": id}})
+	ctx.JSON(http.StatusCreated, gin.H{"error": nil, "data": gin.H{"id": id}})
+}
+
+func Tasks(ctx *gin.Context) {
+	tasks, err := db.TaskRepository.GetTasks()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to fetch tasks", "data": nil})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"error": nil, "data": tasks})
 }
