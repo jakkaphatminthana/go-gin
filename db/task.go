@@ -91,3 +91,13 @@ func (t TaskRepositoryS) UpdateTask(id int, payload UpdateTaskReq) error {
 
 	return nil
 }
+
+func (t TaskRepositoryS) DeleteTask(id int) error {
+	query := `DELETE from tasks WHERE id = $1`
+
+	if _, err := DB.Exec(context.Background(), query, id); err != nil {
+		return err
+	}
+
+	return nil
+}

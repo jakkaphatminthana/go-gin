@@ -20,6 +20,7 @@ func MounteRoutes() *gin.Engine {
 		taskRoutes.GET("/", handlers.Tasks)
 		taskRoutes.GET("/:id", handlers.Task)
 		taskRoutes.PUT("/:id", handlers.UpdateTask)
+		taskRoutes.DELETE("/:id", handlers.DeleteTask)
 	}
 
 	// handler no route 404

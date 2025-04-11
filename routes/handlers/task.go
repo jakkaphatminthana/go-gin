@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -97,4 +98,36 @@ func UpdateTask(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"error": nil, "data": payload})
+}
+
+func DeleteTask(ctx *gin.Context) {
+	id := ctx.Param("id")
+	if id == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID is required", "data": nil})
+		return
+	}
+
+	intID, err := strconv.Atoi(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID must be a valid integer", "data": nil})
+		return
+	}
+
+	if _, err := db.TaskRepository.GetTaskByID(intID); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "data": nil})
+		return
+	}
+
+	if err := db.TaskRepository.DeleteTask(intID); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": fmt.Sprintf("Unable to delete task with ID %d", intID),
+			"data":  nil,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"error": nil,
+		"data":  fmt.Sprintf("Task with ID %d has been deleted", intID),
+	})
 }
