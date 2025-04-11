@@ -1,25 +1,23 @@
 package handlers
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"github.com/jakkaphatminthana/go-gin/db"
+	"net/http"
 )
 
-type PostTaskReq struct {
-	Title       string `json:"title" binding:"required"`
-	Description string `json:"description" binding:"required"`
-	Status      string `json:"status"`
-}
-
 func SaveTask(ctx *gin.Context) {
-	var payload PostTaskReq
-
-	err := ctx.ShouldBindJSON(&payload)
-	if err != nil {
+	var payload db.PostTaskPayload
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Unable to read request body", "data": nil})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"error": nil, "data": payload})
+	id, err := db.TaskRepository.SaveTaskQuery(payload)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to save task", "data": nil})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, gin.H{"message": "Task created successfully", "data": gin.H{"id": id}})
 }

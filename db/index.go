@@ -13,11 +13,11 @@ var DB *pgx.Conn
 
 func InitDB() {
 	// url for connect to database postgres
-	urlExample := config.Config.DatabaseURL
+	urlPostgres := config.Config.DatabaseURL
 	var err error
 
 	// connect to database
-	DB, err = pgx.Connect(context.Background(), urlExample)
+	DB, err = pgx.Connect(context.Background(), urlPostgres)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
