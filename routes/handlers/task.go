@@ -83,13 +83,13 @@ func UpdateTask(ctx *gin.Context) {
 	}
 
 	if payload.Title != "" {
-		task.Title = payload.Title
+		payload.Title = task.Title
 	}
 	if payload.Content != "" {
-		task.Content = payload.Content
+		payload.Content = task.Content
 	}
 	if payload.Status != "" {
-		task.Status = payload.Status
+		payload.Status = task.Status
 	}
 
 	if updateDataErr := db.TaskRepository.UpdateTask(intID, payload); updateDataErr != nil {
