@@ -8,7 +8,11 @@ require (
 	github.com/joho/godotenv v1.5.1
 )
 
-require cloud.google.com/go/compute/metadata v0.3.0 // indirect
+require (
+	cloud.google.com/go/compute/metadata v0.3.0 // indirect
+	github.com/gin-contrib/cors v1.7.5 // indirect
+	github.com/golang-jwt/jwt/v5 v5.2.2 // indirect
+)
 
 require (
 	github.com/bytedance/sonic v1.13.2 // indirect

@@ -2,13 +2,25 @@ package routes
 
 import (
 	"net/http"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jakkaphatminthana/go-gin/routes/handlers"
 )
 
 func MounteRoutes() *gin.Engine {
 	handler := gin.Default()
+
+	//prevent cros
+	handler.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length", "Authorization"},
+		AllowCredentials: true,
+		MaxAge: 12 * time.Hour,
+	}))
 
 	handler.GET("/", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{"message": "OK"})
@@ -26,6 +38,11 @@ func MounteRoutes() *gin.Engine {
 	userLoginRoutes := handler.Group("/login")
 	{
 		userLoginRoutes.GET("/google", handlers.HandlerGoogleLogin)
+	}
+
+	callbackLoginRoutes := handler.Group("/callback")
+	{
+		callbackLoginRoutes.GET("/google", handlers.HandlerGoogleCallback)
 	}
 
 	// handler no route 404
