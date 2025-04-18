@@ -23,6 +23,11 @@ func MounteRoutes() *gin.Engine {
 		taskRoutes.DELETE("/:id", handlers.DeleteTask)
 	}
 
+	userLoginRoutes := handler.Group("/login")
+	{
+		userLoginRoutes.GET("/google", handlers.HandlerGoogleLogin)
+	}
+
 	// handler no route 404
 	handler.NoRoute(func(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Route not found"})
