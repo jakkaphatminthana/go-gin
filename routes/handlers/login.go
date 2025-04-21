@@ -17,9 +17,9 @@ var oauthStateString = "champ"
 
 func init() {
 	googleOauth2Config = &oauth2.Config{
-		ClientID:     config.Config.ClientID,
-		ClientSecret: config.Config.ClientSecret,
-		RedirectURL:  "http://localhost:3000/dashboard/callback/google",
+		ClientID:     config.Config.GoogleClientID,
+		ClientSecret: config.Config.GoogleClientSecret,
+		RedirectURL:  config.Config.GoogleRedirectURL,
 		Scopes: []string{
 			"https://www.googleapis.com/auth/userinfo.profile",
 			"https://www.googleapis.com/auth/userinfo.email",
@@ -93,5 +93,5 @@ func generateJWT(email, name string) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, tokenInfo)
-	return token.SignedString([]byte("hidden_sauce"))
+	return token.SignedString([]byte(config.Config.JWTSaltKey))
 }

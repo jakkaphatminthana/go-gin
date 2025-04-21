@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/jakkaphatminthana/go-gin/config"
 	"github.com/jakkaphatminthana/go-gin/routes/handlers"
 )
 
@@ -14,12 +15,12 @@ func MounteRoutes() *gin.Engine {
 
 	//prevent cros
 	handler.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowOrigins:     []string{config.Config.FEOriginalUrl},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length", "Authorization"},
 		AllowCredentials: true,
-		MaxAge: 12 * time.Hour,
+		MaxAge:           12 * time.Hour,
 	}))
 
 	handler.GET("/", func(ctx *gin.Context) {
