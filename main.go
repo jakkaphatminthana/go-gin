@@ -1,26 +1,15 @@
 package main
 
 import (
-	"context"
-	"net/http"
-
 	"github.com/jakkaphatminthana/go-gin/config"
-	"github.com/jakkaphatminthana/go-gin/db"
-	"github.com/jakkaphatminthana/go-gin/routes"
+	"github.com/jakkaphatminthana/go-gin/database"
+	"github.com/jakkaphatminthana/go-gin/server"
 )
 
 func main() {
-	db.InitDB()
+	conf := config.ConfigGetting()
+	db := database.NewPostgresDatabase(conf.Database)
+	server := server.NewGinServer(conf, db)
 
-	handler := routes.MounteRoutes()
-	server := &http.Server{
-		Addr:    config.Config.AppPort,
-		Handler: handler,
-	}
-
-	// start the server and listen
-	server.ListenAndServe()
-
-	// close the database connection when the server is closed
-	defer db.DB.Close(context.Background())
+	server.Start()
 }
