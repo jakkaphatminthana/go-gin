@@ -10,11 +10,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jakkaphatminthana/go-gin/config"
 	"github.com/jakkaphatminthana/go-gin/database"
-	"github.com/jakkaphatminthana/go-gin/utils"
+	"github.com/jakkaphatminthana/go-gin/middleware"
 )
 
 type ginServer struct {
@@ -30,7 +29,7 @@ var (
 )
 
 func NewGinServer(config *config.Config, db database.Database) *ginServer {
-	gin.SetMode(gin.ReleaseMode)
+	gin.SetMode(gin.DebugMode)
 	engine := gin.New()
 
 	once.Do(func() {
@@ -44,20 +43,23 @@ func NewGinServer(config *config.Config, db database.Database) *ginServer {
 }
 
 func (s *ginServer) Start() {
-	corsMiddleware := getCROSMiddleware(s.conf.Server.AllowOrigins)
-	bodyLimitMiddleware := getBodyLimitMiddleware(s.conf.Server.BodyLimit)
-	timeoutMiddleware := getTimeoutMiddleware(s.conf.Server.Timeout)
+	corsMiddleware := middleware.CROSMiddleware(s.conf.Server.AllowOrigins)
+	bodyLimitMiddleware := middleware.BodyLimitMiddleware(s.conf.Server.BodyLimit)
+	timeoutMiddleware := middleware.TimeoutMiddleware(s.conf.Server.Timeout)
+	errorHandlerMiddleware := middleware.ErrorHandlerMiddleware()
 
 	s.engine.Use(gin.Recovery())
 	s.engine.Use(gin.Logger())
 	s.engine.Use(corsMiddleware)
 	s.engine.Use(bodyLimitMiddleware)
 	s.engine.Use(timeoutMiddleware)
+	s.engine.Use(errorHandlerMiddleware)
 
 	// routers
 	s.engine.GET("/", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{"message": "OK"})
 	})
+	s.initTaskRouter()
 
 	s.server = &http.Server{
 		Addr:         ":" + s.conf.Server.Port,
@@ -72,35 +74,6 @@ func (s *ginServer) Start() {
 
 	// Gracefully shutdown
 	s.gracefullyShutdown()
-}
-
-func getCROSMiddleware(allowOrigins []string) gin.HandlerFunc {
-	return cors.New(cors.Config{
-		AllowOrigins:     allowOrigins,
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length", "Authorization"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	})
-}
-
-func getBodyLimitMiddleware(bodyLimit string) gin.HandlerFunc {
-	limitBytes := utils.ParseSize(bodyLimit)
-	return func(c *gin.Context) {
-		c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, limitBytes)
-		c.Next()
-	}
-}
-
-func getTimeoutMiddleware(timeout time.Duration) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		ctx, cancel := context.WithTimeout(c.Request.Context(), timeout)
-		defer cancel()
-
-		c.Request = c.Request.WithContext(ctx)
-		c.Next()
-	}
 }
 
 func (s *ginServer) startHTTPListener() {
