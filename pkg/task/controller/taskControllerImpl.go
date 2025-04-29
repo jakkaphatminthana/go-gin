@@ -34,14 +34,16 @@ func (c *taskControllerImpl) Listing(pctx *gin.Context) {
 
 // implement
 func (c *taskControllerImpl) FindById(pctx *gin.Context) {
-	paramId := pctx.Param("id")
-	id, err := utils.ParseStringToUint64(paramId)
-	if err != nil {
+	var param = struct {
+		ID uint64 `uri:"id" binding:"required"`
+	}{}
+
+	if err := custom.NewCustomRequest(pctx).BindUri(&param); err != nil {
 		custom.Error(pctx, err, http.StatusBadRequest)
 		return
 	}
 
-	taskModel, err := c.taskService.FindById(id)
+	taskModel, err := c.taskService.FindById(param.ID)
 	if err != nil {
 		custom.Error(pctx, err)
 		return

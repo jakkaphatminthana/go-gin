@@ -31,10 +31,9 @@ func ToCamelCase(input string) string {
 }
 
 func GetJsonFieldNameByErrorField(fe validator.FieldError) string {
-	jsonName := fe.Field() // fallback
-	if fe.StructField() != "" {
-		jsonName = strings.ToLower(string(fe.StructField()[0])) + fe.StructField()[1:]
-	}
+	// Get the top-level struct type from the namespace
+	t := fe.StructField()
 
-	return jsonName
+	// fallback to json key using camelCase
+	return ToCamelCase(strings.ToLower(t))
 }
