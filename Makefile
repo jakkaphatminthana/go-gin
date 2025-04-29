@@ -1,6 +1,6 @@
 include .env
 
-MIGRATIONS_PATH = ./db/migrations
+MIGRATIONS_PATH = ./database/migrations
 
 .PHONY: migrate-create
 migrate-create:

@@ -5,31 +5,29 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+var validate = validator.New()
+
 type (
-	GinRequest interface {
+	RequestBinder interface {
 		Bind(obj any) error
 	}
 
-	customGinRequest struct {
-		ctx       *gin.Context
-		validator *validator.Validate
+	requestBinder struct {
+		ctx *gin.Context
 	}
 )
 
-func NewCustomRequest(ginRequest *gin.Context) GinRequest {
-	return &customGinRequest{
-		ctx:       ginRequest,
-		validator: validator.New(),
-	}
+func NewCustomRequest(ctx *gin.Context) RequestBinder {
+	return &requestBinder{ctx: ctx}
 }
 
 // implement
-func (c *customGinRequest) Bind(obj any) error {
+func (c *requestBinder) Bind(obj any) error {
 	if err := c.ctx.ShouldBind(obj); err != nil {
 		return err
 	}
 
-	if err := c.validator.Struct(obj); err != nil {
+	if err := validate.Struct(obj); err != nil {
 		return err
 	}
 
