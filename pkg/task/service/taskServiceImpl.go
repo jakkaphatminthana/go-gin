@@ -45,6 +45,47 @@ func (s *taskServiceImpl) FindById(id uint64) (*_taskModel.Task, error) {
 	return item.ToTaskModel(), nil
 }
 
+// implement
+func (s *taskServiceImpl) Create(createReq *_taskModel.TaskCreateReq) (*_taskModel.Task, error) {
+	taskEntity := &entities.Task{
+		Title:   createReq.Title,
+		Content: createReq.Content,
+		Status:  string(createReq.Status),
+	}
+
+	result, err := s.taskRepository.Create(taskEntity)
+	if err != nil {
+		return nil, err
+	}
+
+	return result.ToTaskModel(), nil
+}
+
+// implement
+func (s *taskServiceImpl) Update(taskId uint64, taskUpdateReq *_taskModel.TaskUpdateReq) (*_taskModel.Task, error) {
+	_, err := s.taskRepository.Update(taskId, taskUpdateReq)
+	if err != nil {
+		return nil, err
+	}
+
+	taskEntityResult, err := s.taskRepository.FindById(taskId)
+	if err != nil {
+		return nil, err
+	}
+
+	return taskEntityResult.ToTaskModel(), nil
+}
+
+// implement
+func (s *taskServiceImpl) Delete(taskId uint64) error {
+	_, err := s.FindById(taskId)
+	if err != nil {
+		return err
+	}
+
+	return s.taskRepository.Delete(taskId)
+}
+
 func (s *taskServiceImpl) toTaskResultResponse(itemEntityList []*entities.Task) []*_taskModel.Task {
 	//Mapper entity to model
 	taskModelList := make([]*_taskModel.Task, 0)

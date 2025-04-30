@@ -17,4 +17,7 @@ func (s *ginServer) initTaskRouter() {
 	//endpoint
 	router.GET("/", taskController.Listing)
 	router.GET("/:id", taskController.FindById)
+	router.POST("/", taskController.Create)
+	router.PATCH("/:id", taskController.Update)
+	router.DELETE("/:id", taskController.Delete)
 }
