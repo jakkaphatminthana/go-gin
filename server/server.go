@@ -47,6 +47,7 @@ func (s *ginServer) Start() {
 	bodyLimitMiddleware := middleware.BodyLimitMiddleware(s.conf.Server.BodyLimit)
 	timeoutMiddleware := middleware.TimeoutMiddleware(s.conf.Server.Timeout)
 	errorHandlerMiddleware := middleware.ErrorHandlerMiddleware()
+	// authMiddleware := middleware.NewAuthorizationMiddleware(s.conf).Handler()
 
 	s.engine.Use(gin.Recovery())
 	s.engine.Use(gin.Logger())
@@ -60,6 +61,7 @@ func (s *ginServer) Start() {
 		ctx.JSON(http.StatusOK, gin.H{"message": "OK"})
 	})
 	s.initTaskRouter()
+	s.initOAuth2Router()
 
 	s.server = &http.Server{
 		Addr:         ":" + s.conf.Server.Port,

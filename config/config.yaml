@@ -10,6 +10,7 @@ oauth2:
   googleClientID: "${GOOGLE_CLIENT_ID}"
   googleClientSecret: "${GOOGLE_CLIENT_SECRET}"
   scopes:
+    - "openid"
     - "https://www.googleapis.com/auth/userinfo.email"
     - "https://www.googleapis.com/auth/userinfo.profile"
   userInfoUrl: "https://www.googleapis.com/oauth2/v2/userinfo"
