@@ -1,6 +1,8 @@
 package custom
 
-import "net/http"
+import (
+	"net/http"
+)
 
 type AppError interface {
 	error
