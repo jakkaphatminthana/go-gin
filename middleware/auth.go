@@ -1,45 +1,57 @@
 package middleware
 
 import (
-	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/jakkaphatminthana/go-gin/config"
+	"github.com/jakkaphatminthana/go-gin/pkg/custom"
 )
 
-func AuthorizationMiddleware() gin.HandlerFunc {
+type AuthorizationMiddleware struct {
+	conf *config.Config
+}
+
+func NewAuthorizationMiddleware(conf *config.Config) *AuthorizationMiddleware {
+	return &AuthorizationMiddleware{conf: conf}
+}
+
+func (m *AuthorizationMiddleware) Handler() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		// read Authorization rawToken from request header
-		rawToken := ctx.GetHeader("Authorization")
-		if rawToken == "" {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token not found"})
+		// 1. get token from Authorization header
+		authHeader := ctx.GetHeader("Authorization")
+		if authHeader == "" {
+			ctx.Error(custom.ErrorUnauthorized("authorization token not found"))
 			ctx.Abort()
 			return
 		}
 
-		// remove Bearer from token
-		if len(rawToken) > 7 && rawToken[:7] == "Bearer " {
-			rawToken = rawToken[7:]
+		// 2. check and strip Bearer
+		const prefix = "Bearer "
+		if !strings.HasPrefix(authHeader, prefix) {
+			ctx.Error(custom.ErrorUnauthorized("authorization token must begin with Bearer"))
+			ctx.Abort()
+			return
 		}
 
-		// validate token
-		token, err := jwt.Parse(rawToken, func(t *jwt.Token) (interface{}, error) {
-			return []byte(config.Config.JWTSaltKey), nil
+		tokenString := strings.TrimPrefix(authHeader, prefix)
+
+		// 3. parse and validate token
+		token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
+			return []byte(m.conf.EVNValue.JWTSaltKey), nil
 		})
-
 		if err != nil || !token.Valid {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
+			ctx.Error(custom.ErrorUnauthorized("invalid or expired token"))
 			ctx.Abort()
 			return
 		}
 
-		// set user info to context
-		claims, ok := token.Claims.(jwt.MapClaims)
-		if ok {
+		// 4. set claims to context
+		if claims, ok := token.Claims.(jwt.MapClaims); ok {
 			ctx.Set("user", claims)
 		}
 
-		ctx.Next() //pass
+		ctx.Next()
 	}
 }
