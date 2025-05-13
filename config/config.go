@@ -75,7 +75,8 @@ func ConfigGetting() *Config {
 		// Initialize Viper
 		viper.SetConfigName("config")
 		viper.SetConfigType("yaml")
-		viper.AddConfigPath("./config")
+		viper.AddConfigPath("./bin")
+		viper.AddConfigPath(".")
 		viper.AutomaticEnv()
 		// server.port -> SERVER_PORT (environment variable)
 		viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
