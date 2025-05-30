@@ -51,6 +51,9 @@ SSL_MODE=disable
 GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
 GOOGLE_REDIRECT_URL=your-google-redirect-url
+
+JWT_SALT_KEY=
+FE_ORIGINAL_URL=
 ```
 
 Then set up config.yaml (already in repo)
