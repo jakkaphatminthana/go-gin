@@ -14,6 +14,8 @@ import (
 	"github.com/jakkaphatminthana/go-gin/config"
 	"github.com/jakkaphatminthana/go-gin/database"
 	"github.com/jakkaphatminthana/go-gin/middleware"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type ginServer struct {
@@ -55,6 +57,9 @@ func (s *ginServer) Start() {
 	s.engine.Use(bodyLimitMiddleware)
 	s.engine.Use(timeoutMiddleware)
 	s.engine.Use(errorHandlerMiddleware)
+
+	//swagger
+	s.engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// routers
 	s.engine.GET("/", func(ctx *gin.Context) {

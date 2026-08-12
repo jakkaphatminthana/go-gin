@@ -1,0 +1,259 @@
+basePath: /v1
+definitions:
+  model.TaskCreateReq:
+    properties:
+      content:
+        maxLength: 255
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/types.TaskStatus'
+        enum:
+        - todo
+        - doing
+        - done
+      title:
+        maxLength: 100
+        type: string
+    required:
+    - status
+    - title
+    type: object
+  model.TaskUpdateReq:
+    properties:
+      content:
+        maxLength: 255
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/types.TaskStatus'
+        enum:
+        - todo
+        - doing
+        - done
+      title:
+        maxLength: 100
+        type: string
+    required:
+    - status
+    - title
+    type: object
+  types.TaskStatus:
+    enum:
+    - todo
+    - doing
+    - done
+    type: string
+    x-enum-varnames:
+    - TaskStatusTodo
+    - TaskStatusDoing
+    - TaskStatusDone
+  utils.DocsDataObject:
+    properties:
+      data: {}
+    type: object
+  utils.DocsErrorBadRequest:
+    properties:
+      error:
+        properties:
+          details:
+            additionalProperties:
+              type: string
+            type: object
+          message:
+            example: Bad request
+            type: string
+          status:
+            example: 400
+            type: integer
+        type: object
+    type: object
+  utils.DocsErrorInternalServerError:
+    properties:
+      error:
+        properties:
+          details:
+            additionalProperties:
+              type: string
+            type: object
+          message:
+            example: Internal Server Error
+            type: string
+          status:
+            example: 500
+            type: integer
+        type: object
+    type: object
+  utils.DocsErrorNotFound:
+    properties:
+      error:
+        properties:
+          details:
+            additionalProperties:
+              type: string
+            type: object
+          message:
+            example: Not Found
+            type: string
+          status:
+            example: 404
+            type: integer
+        type: object
+    type: object
+  utils.DocsSuccessDetail:
+    properties:
+      details:
+        additionalProperties:
+          type: string
+        type: object
+      message:
+        type: string
+      name:
+        type: string
+      status:
+        type: integer
+    type: object
+  utils.DocsSuccessMessage:
+    properties:
+      success:
+        $ref: '#/definitions/utils.DocsSuccessDetail'
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is a sample server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: GoGin API
+  version: "1.0"
+paths:
+  /task:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.DocsDataObject'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.DocsErrorBadRequest'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.DocsErrorNotFound'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.DocsErrorInternalServerError'
+      summary: List Tasks
+      tags:
+      - Tasks
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Request of Creating Task
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.TaskCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.DocsDataObject'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.DocsErrorBadRequest'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.DocsErrorNotFound'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.DocsErrorInternalServerError'
+      summary: Create task
+      tags:
+      - Tasks
+  /task/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: id of task
+        in: path
+        name: id
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.DocsSuccessMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.DocsErrorBadRequest'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.DocsErrorNotFound'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.DocsErrorInternalServerError'
+      summary: Delete task
+      tags:
+      - Tasks
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: id of task
+        in: path
+        name: id
+        required: true
+        type: number
+      - description: Request of Updating Task
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.TaskUpdateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.DocsDataObject'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.DocsErrorBadRequest'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.DocsErrorNotFound'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.DocsErrorInternalServerError'
+      summary: Update task
+      tags:
+      - Tasks
+swagger: "2.0"

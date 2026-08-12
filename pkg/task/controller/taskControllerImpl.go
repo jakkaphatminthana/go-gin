@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jakkaphatminthana/go-gin/pkg/custom"
-	_taskModel "github.com/jakkaphatminthana/go-gin/pkg/task/model"
+	taskModel "github.com/jakkaphatminthana/go-gin/pkg/task/model"
 	_taskService "github.com/jakkaphatminthana/go-gin/pkg/task/service"
 )
 
@@ -21,7 +21,17 @@ func NewTaskControllerImpl(
 	}
 }
 
-// implement
+// Listing
+//
+//	@Router		/task [get]
+//	@Summary	List Tasks
+//	@Tags		Tasks
+//	@Accept		json
+//	@Produce	json
+//	@Success	200	{object}	utils.DocsDataObject[taskModel.Task]
+//	@Failure	400	{object}	utils.DocsErrorBadRequest
+//	@Failure	404	{object}	utils.DocsErrorNotFound
+//	@Failure	500	{object}	utils.DocsErrorInternalServerError
 func (c *taskControllerImpl) Listing(pctx *gin.Context) {
 	taskModelList, err := c.taskService.Listing()
 	if err != nil {
@@ -32,7 +42,19 @@ func (c *taskControllerImpl) Listing(pctx *gin.Context) {
 	custom.Success(pctx, http.StatusOK, taskModelList)
 }
 
-// implement
+// Find by ID
+//
+//	@Router		/task/{id} [get]
+//	@Summary	Find task by ID
+//	@Tags		Tasks
+//	@Accept		json
+//	@Produce	json
+//	@Param		id	path		number	true	"id of task"
+//	@Success	200	{object}	utils.DocsDataObject
+//	@Failure	400	{object}	utils.DocsErrorBadRequest
+//	@Failure	404	{object}	utils.DocsErrorNotFound
+//	@Failure	500	{object}	utils.DocsErrorInternalServerError
+
 func (c *taskControllerImpl) FindById(pctx *gin.Context) {
 	var param = struct {
 		ID uint64 `uri:"id" binding:"required"`
@@ -53,9 +75,20 @@ func (c *taskControllerImpl) FindById(pctx *gin.Context) {
 	custom.Success(pctx, http.StatusOK, taskModel)
 }
 
-// implement
+// Create
+//
+//	@Router		/task [post]
+//	@Summary	Create task
+//	@Tags		Tasks
+//	@Accept		json
+//	@Produce	json
+//	@Param		request	body		model.TaskCreateReq	true	"Request of Creating Task"
+//	@Success	200		{object}	utils.DocsDataObject
+//	@Failure	400		{object}	utils.DocsErrorBadRequest
+//	@Failure	404		{object}	utils.DocsErrorNotFound
+//	@Failure	500		{object}	utils.DocsErrorInternalServerError
 func (c *taskControllerImpl) Create(pctx *gin.Context) {
-	createReq := new(_taskModel.TaskCreateReq)
+	createReq := new(taskModel.TaskCreateReq)
 
 	// validate
 	customRequest := custom.NewCustomRequest(pctx)
@@ -74,7 +107,19 @@ func (c *taskControllerImpl) Create(pctx *gin.Context) {
 	custom.Success(pctx, http.StatusCreated, task)
 }
 
-// implement
+// Update
+//
+//	@Router		/task/{id} [patch]
+//	@Summary	Update task
+//	@Tags		Tasks
+//	@Accept		json
+//	@Produce	json
+//	@Param		id		path		number				true	"id of task"
+//	@Param		request	body		model.TaskUpdateReq	true	"Request of Updating Task"
+//	@Success	200		{object}	utils.DocsDataObject
+//	@Failure	400		{object}	utils.DocsErrorBadRequest
+//	@Failure	404		{object}	utils.DocsErrorNotFound
+//	@Failure	500		{object}	utils.DocsErrorInternalServerError
 func (c *taskControllerImpl) Update(pctx *gin.Context) {
 	var param = struct {
 		ID uint64 `uri:"id" binding:"required"`
@@ -86,7 +131,7 @@ func (c *taskControllerImpl) Update(pctx *gin.Context) {
 		return
 	}
 
-	taskUpdateReq := new(_taskModel.TaskUpdateReq)
+	taskUpdateReq := new(taskModel.TaskUpdateReq)
 
 	// validate and convert (body)
 	customRequest := custom.NewCustomRequest(pctx)
@@ -105,7 +150,18 @@ func (c *taskControllerImpl) Update(pctx *gin.Context) {
 	custom.Success(pctx, http.StatusCreated, task)
 }
 
-// implement
+// Delete
+//
+//	@Router		/task/{id} [delete]
+//	@Summary	Delete task
+//	@Tags		Tasks
+//	@Accept		json
+//	@Produce	json
+//	@Param		id	path		number	true	"id of task"
+//	@Success	200	{object}	utils.DocsSuccessMessage
+//	@Failure	400	{object}	utils.DocsErrorBadRequest
+//	@Failure	404	{object}	utils.DocsErrorNotFound
+//	@Failure	500	{object}	utils.DocsErrorInternalServerError
 func (c *taskControllerImpl) Delete(pctx *gin.Context) {
 	var param = struct {
 		ID uint64 `uri:"id" binding:"required"`
